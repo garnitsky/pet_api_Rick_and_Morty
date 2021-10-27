@@ -1,6 +1,6 @@
 class ApiService {
-    _apiBase
-    _apiKey
+    _apiBase = 'https://rickandmortyapi.com/api/character';
+
 
     getResurce = async (url) => {
         let res = await fetch(url);
@@ -11,23 +11,27 @@ class ApiService {
     }
 
     getAllCharacters = async () => {
-        const res = await this.getResurce(`https://rickandmortyapi.com/api/character`);
-        console.log(res);
+        const res = await this.getResurce(this._apiBase);
         return res;
     }
 
-    transformCharacter = (char) => {
-
-        return {
-            id: char.id,
-            name: char.name,
-            description: char.description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',
-            thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
-            homepage: char.urls[0].url,
-            wiki: char.urls[1].url,
-            comics: char.comics.items
-        }
+    getRandomCharacter = async (id) => {
+        const res = await this.getResurce(`${this._apiBase}/${id}`);
+        return res;
     }
+
+    //transformCharacter = (char) => {
+
+    //    return {
+    //        id: char.id,
+    //        name: char.name,
+    //        description: char.description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',
+    //        thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
+    //        homepage: char.urls[0].url,
+    //        wiki: char.urls[1].url,
+    //        comics: char.comics.items
+    //    }
+    //}
 }
 
 export default ApiService
