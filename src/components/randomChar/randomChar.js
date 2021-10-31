@@ -1,5 +1,8 @@
+import "./randomChar.scss";
 import { Component } from "react";
 import ApiService from "../../services";
+import Spinner from "../spinner/spinner";
+import ErrorMessage from "../errorMessage/errorMessage";
 
 class RandomChar extends Component {
     constructor(props) {
@@ -7,64 +10,43 @@ class RandomChar extends Component {
         this.updateChar()
     }
     state = {
-        id: null,
-        name: null,
-        status: null,
-        species: "Human",
-        type: "",
-        gender: "Male",
-        origin: {
-            name: "Earth",
-            url: "https://rickandmortyapi.com/api/location/1"
-        },
-        location: {
-            name: "Earth",
-            url: "https://rickandmortyapi.com/api/location/20"
-        },
-        image: `https://rickandmortyapi.com/api/character/avatar/${this.id}.jpeg`,
-        episode: [
-            "https://rickandmortyapi.com/api/episode/1",
-            "https://rickandmortyapi.com/api/episode/2",
-            // ...
-        ],
-        url: `https://rickandmortyapi.com/api/character/${this.id}`,
-        created: "2017-11-04T18:50:21.651Z"
+        char: {},
+        loading: true,
+        error: false
     }
 
     apiService = new ApiService();
 
-    updateChar = () => {
-        const id = Math.floor(Math.random() * (671 - 1) + 1);
-        this.apiService.getRandomCharacter(id).then(res => {
-            this.setState({
-                name: res.name,
-                status: res.status,
-                image: res.image,
-                url: res.url
-            })
+    onCharLoaded = (char) => {
+        this.setState({ char, loading: false })
+    }
+
+    onError = () => {
+        this.setState({
+            loading: false,
+            error: true
         })
     }
+
+    updateChar = () => {
+        const id = Math.floor(Math.random() * (671 - 1) + 1);
+        this.apiService
+            .getRandomCharacter(id)
+            .then(this.onCharLoaded)
+            .catch(this.onError)
+    }
+
     render() {
-        const { id, name, status, species, type, gender, origin, location, image, episode, url, created } = this.state
+        const { char, loading, error } = this.state;
+        const errorMessage = error ? <ErrorMessage /> : null;
+        const spinner = loading ? <Spinner /> : null;
+        const content = !(error || loading) ? <View char={char} /> : null;
+
         return (
             <div className="randomchar">
-                <div className="randomchar__block">
-                    <img src={image} alt="Random character" className="randomchar__img" />
-                    <div className="randomchar__info">
-                        <p className="randomchar__name">{name}</p>
-                        <p className="randomchar__descr">
-                            As the Norse God of thunder and lightning, Thor wields one of the greatest weapons ever made, the enchanted hammer Mjolnir. While others have described Thor as an over-muscled, oafish imbecile, he's quite smart and compassionate...
-                        </p>
-                        <div className="randomchar__btns">
-                            <a href={url} className="button button__main">
-                                <div className="inner">homepage</div>
-                            </a>
-                            <a href="#" className="button button__secondary">
-                                <div className="inner">Wiki</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                {errorMessage}
+                {spinner}
+                {content}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!<br />
@@ -81,6 +63,55 @@ class RandomChar extends Component {
             </div>
         )
     }
-};
+}
+
+const View = ({ char }) => {
+    const { image, name, gender, url } = char
+    return (
+        <div className="randomchar__block">
+            <img src={image} alt="Random character" className="randomchar__img" />
+            <div className="randomchar__info">
+                <p className="randomchar__name">{name}</p>
+                <p className="randomchar__descr">
+                    {gender}
+                </p>
+                <div className="randomchar__btns">
+                    <a href={url} className="button button__main">
+                        <div className="inner">homepage</div>
+                    </a>
+                    <a href="#" className="button button__secondary">
+                        <div className="inner">Wiki</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 
 export default RandomChar;
+
+
+
+//id: null,
+//    name: null,
+//        status: null,
+//            species: "Human",
+//                type: "",
+//                    gender: "Male",
+//                        origin: {
+//    name: "Earth",
+//        url: "https://rickandmortyapi.com/api/location/1"
+//},
+//location: {
+//    name: "Earth",
+//        url: "https://rickandmortyapi.com/api/location/20"
+//},
+//image: `https://rickandmortyapi.com/api/character/avatar/${this.id}.jpeg`,
+//    episode: [
+//        "https://rickandmortyapi.com/api/episode/1",
+//        "https://rickandmortyapi.com/api/episode/2",
+//        // ...
+//    ],
+//        url: `https://rickandmortyapi.com/api/character/${this.id}`,
+//            created: "2017-11-04T18:50:21.651Z",
