@@ -7,8 +7,6 @@ const Header = () => {
             Rick and Morty API
         </div>
     )
-
-
 }
 
 export default Header;

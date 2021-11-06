@@ -5,10 +5,7 @@ import Spinner from "../spinner/spinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 
 class RandomChar extends Component {
-    constructor(props) {
-        super(props);
-        this.updateChar()
-    }
+
     state = {
         char: {},
         loading: true,
@@ -21,6 +18,10 @@ class RandomChar extends Component {
         this.setState({ char, loading: false })
     }
 
+    onCharloading = () => {
+        this.setState({ loading: true })
+    }
+
     onError = () => {
         this.setState({
             loading: false,
@@ -30,10 +31,15 @@ class RandomChar extends Component {
 
     updateChar = () => {
         const id = Math.floor(Math.random() * (671 - 1) + 1);
+        this.onCharloading();
         this.apiService
             .getRandomCharacter(id)
             .then(this.onCharLoaded)
             .catch(this.onError)
+    }
+
+    componentDidMount() {
+        this.updateChar()
     }
 
     render() {
@@ -56,9 +62,8 @@ class RandomChar extends Component {
                         Or choose another one
                     </p>
                     <button className="button button__main">
-                        <div className="inner">try it</div>
+                        <div onClick={this.updateChar} className="inner">try it</div>
                     </button>
-                    <img src="#" alt="mjolnir" className="randomchar__decoration" />
                 </div>
             </div>
         )
@@ -79,7 +84,7 @@ const View = ({ char }) => {
                     <a href={url} className="button button__main">
                         <div className="inner">homepage</div>
                     </a>
-                    <a href="#" className="button button__secondary">
+                    <a href="www" className="button button__secondary">
                         <div className="inner">Wiki</div>
                     </a>
                 </div>
@@ -88,30 +93,4 @@ const View = ({ char }) => {
     )
 }
 
-
 export default RandomChar;
-
-
-
-//id: null,
-//    name: null,
-//        status: null,
-//            species: "Human",
-//                type: "",
-//                    gender: "Male",
-//                        origin: {
-//    name: "Earth",
-//        url: "https://rickandmortyapi.com/api/location/1"
-//},
-//location: {
-//    name: "Earth",
-//        url: "https://rickandmortyapi.com/api/location/20"
-//},
-//image: `https://rickandmortyapi.com/api/character/avatar/${this.id}.jpeg`,
-//    episode: [
-//        "https://rickandmortyapi.com/api/episode/1",
-//        "https://rickandmortyapi.com/api/episode/2",
-//        // ...
-//    ],
-//        url: `https://rickandmortyapi.com/api/character/${this.id}`,
-//            created: "2017-11-04T18:50:21.651Z",
