@@ -1,5 +1,6 @@
 class ApiService {
     _apiBase = 'https://rickandmortyapi.com/api/character';
+    page = 1
 
     getResurce = async (url) => {
         let res = await fetch(url);
@@ -9,8 +10,8 @@ class ApiService {
         return await res.json();
     }
 
-    getAllCharacters = async () => {
-        const res = await this.getResurce(`${this._apiBase}/?page=2`);
+    getAllCharacters = async (page = this.page) => {
+        const res = await this.getResurce(`${this._apiBase}/?page=${page}`);
         console.log(res);
         return res.results.map(this.transformCharacter);
     }
@@ -28,7 +29,7 @@ class ApiService {
             image: char.image,
             url: char.url,
             gender: char.gender,
-            species: char.species
+            species: char.species,
         }
     }
 }

@@ -1,4 +1,4 @@
-import "./charList.scss"
+import "./charList.css"
 import { Component } from "react";
 import ApiService from "../../services";
 import ErrorMessage from "../errorMessage/errorMessage";
@@ -9,22 +9,44 @@ class CharList extends Component {
     state = {
         loading: true,
         error: false,
-        charList: []
+        charList: [],
+        newItemLoading: false,
+        page: 40,
+        charEnded: false,
     }
 
     apiService = new ApiService();
 
     componentDidMount() {
-        this.apiService.getAllCharacters()
+        this.onRequest();
+    }
+
+    onRequest = (page) => {
+        this.onCharListLoading();
+        this.apiService.getAllCharacters(page)
             .then(this.onCharListLoaded)
             .catch(this.onError)
     }
 
-    onCharListLoaded = (charList) => {
+    onCharListLoading = () => {
         this.setState({
-            charList,
-            loading: false
+            newItemLoading: true
         })
+    }
+
+    onCharListLoaded = (newCharList) => {
+        let ended = false;
+        if (newCharList.length < 20) {
+            ended = true;
+        }
+
+        this.setState(({ page, charList }) => ({
+            charList: [...charList, ...newCharList],
+            loading: false,
+            newItemLoading: false,
+            page: page + 1,
+            charEnded: ended
+        }))
     }
 
     onError = () => {
@@ -34,24 +56,14 @@ class CharList extends Component {
         })
     }
 
-    //updateCharList = () => {
-    //    //const id = Math.floor(Math.random() * (671 - 1) + 1);
-    //    this.onCharloading();
-    //    this.apiService
-    //        .getAllCharacters()
-    //        .then(this.onCharLoaded)
-    //        .catch(this.onError);
-    //}
+    charInfo = () => {
 
-    //onCharloading = () => {
-    //    this.setState({ loading: true })
-    //}
+    }
 
     renderItems = (arr) => {
         return arr.map(item => {
-
             return (
-                <div className="char__item">
+                <div className="char__item" key={item.id} onClick={this.charInfo}>
                     <div>
                         <img src={item.image} alt={item.name} />
                     </div>
@@ -64,20 +76,26 @@ class CharList extends Component {
         })
     }
 
-
-
     render() {
-        const { charList, loading, error } = this.state;
+        const { newItemLoading, charList, loading, error, page, charEnded } = this.state;
         const items = this.renderItems(charList);
 
         const errorMessage = error ? <ErrorMessage /> : null;
         const spinner = loading ? <Spinner /> : null;
         const content = !(error || loading) ? items : null;
         return (
-            <div className="charList">
-                {errorMessage}
-                {spinner}
-                {content}
+            <div>
+                <div className="charList">
+                    {errorMessage}
+                    {spinner}
+                    {content}
+                </div>
+                <button className="button__long"
+                    style={{ 'display': charEnded ? 'none' : 'block' }}
+                    disabled={newItemLoading}
+                    onClick={() => this.onRequest(page)}>
+                    load more
+                </button>
             </div >
         )
     }

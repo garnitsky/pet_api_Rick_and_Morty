@@ -1,22 +1,39 @@
 
+import { Component } from 'react';
 import './App.css';
 import CharList from './components/charList/charList';
+import ErrorBoundary from './components/errorBoundary/errorBoundary';
 import Header from './components/header/header';
 import RandomChar from './components/randomChar/randomChar';
 
-const App = () => {
+class App extends Component {
 
+    state = {
+        selectedChar: null
+    }
 
-    return (
-        <div className="App">
-            <div className="container">
+    onCharSelected = (id) => {
+        this.setState({
+            selectedChar: id
+        })
+    }
 
-                <Header />
-                <RandomChar />
-                <CharList />
+    render() {
+        return (
+            <div className="App">
+                <div className="container">
+                    <Header />
+                    <ErrorBoundary>
+                        <RandomChar />
+                    </ErrorBoundary>
+                    <ErrorBoundary>
+                        <CharList onCharSelected={this.onCharSelected} />
+                    </ErrorBoundary>
+
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 }
 
 export default App;
